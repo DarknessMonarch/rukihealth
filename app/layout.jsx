@@ -27,7 +27,7 @@ const BANNER_URL =
   "https://raw.githubusercontent.com/DarknessMonarch/rukihealth/refs/heads/master/public/assets/banner.png";
 
 export const viewport = {
-  themeColor: "#00a86b",
+  themeColor: "#37b44c",
 };
 
 export const metadata = {

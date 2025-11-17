@@ -8,7 +8,7 @@ export default function manifest() {
     display: 'standalone',
     orientation: 'portrait',
     background_color: '#ffffff',
-    theme_color: '#00a86b',
+    theme_color: '#37b44c',
     categories: [
       'health',
       'wellness',

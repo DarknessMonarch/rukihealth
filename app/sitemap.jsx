@@ -3,7 +3,7 @@ async function getProductUrls() {
     const baseUrl =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
-        : (process.env.NEXT_PUBLIC_API_URL || "https://rukihealth.com");
+        : (process.env.NEXT_PUBLIC_API_URL || "https://rukihealth.swiftsyn.com");
 
     const apiUrl = `${baseUrl}/api/products/sitemap`;
 
@@ -18,7 +18,10 @@ async function getProductUrls() {
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) return [];
+    if (!response.ok) {
+      console.error(`Failed to fetch products for sitemap: ${response.status}`);
+      return [];
+    }
 
     const data = await response.json();
     const products = data.products || [];
@@ -30,35 +33,10 @@ async function getProductUrls() {
       priority: 0.8,
     }));
   } catch (error) {
+    console.error("Error fetching product URLs for sitemap:", error);
     return [];
   }
 }
-
-export default async function sitemap() {
-  const baseUrl = "https://rukihealth.com";
-
-  const staticRoutes = [
-    { url: `${baseUrl}/`, priority: 1.0 },
-    { url: `${baseUrl}/page/products`, priority: 0.8 },
-    { url: `${baseUrl}/page/categories`, priority: 0.8 },
-    { url: `${baseUrl}/page/about`, priority: 0.6 },
-    { url: `${baseUrl}/page/contact`, priority: 0.6 },
-    { url: `${baseUrl}/page/privacy`, priority: 0.3 },
-    { url: `${baseUrl}/page/terms`, priority: 0.3 },
-    { url: `${baseUrl}/page/refund`, priority: 0.3 },
-  ].map((route) => ({
-    ...route,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-  }));
-
-  const [productUrls] = await Promise.allSettled([getProductUrls()]);
-  const productUrlsResult =
-    productUrls.status === "fulfilled" ? productUrls.value : [];
-
-  return [...staticRoutes, ...productUrlsResult];
-}
-
 
 export default async function sitemap() {
   const baseUrl = "https://rukihealth.swiftsyn.com";
@@ -74,8 +52,8 @@ export default async function sitemap() {
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.95,
+      changeFrequency: "monthly",
+      priority: 0.8,
     }
   ];
 
@@ -113,13 +91,7 @@ export default async function sitemap() {
       url: `${baseUrl}/products`,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/products/[slug]`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.7,
+      priority: 0.9,
     }
   ];
 
@@ -130,12 +102,6 @@ export default async function sitemap() {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/page/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
     },
     {
       url: `${baseUrl}/page/privacy`,
@@ -151,7 +117,7 @@ export default async function sitemap() {
     },
   ];
 
-  // Fetch dynamic product pages
+  // Fetch dynamic product URLs
   const [productUrls] = await Promise.allSettled([getProductUrls()]);
   const productUrlsResult =
     productUrls.status === "fulfilled" ? productUrls.value : [];
